@@ -1,5 +1,6 @@
 const express = require("express");
 const adminData = require("./admin");
+
 const router = express.Router();
 
 router.get("/", (req, res, next) => {
@@ -7,8 +8,10 @@ router.get("/", (req, res, next) => {
   res.render("shop", {
     prods: products,
     pageTitle: "Shop",
-    path: "/shop",
+    path: "/",
     hasProducts: products.length > 0,
+    activeShop: true,
+    productCSS: true,
   });
 });
 
