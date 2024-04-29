@@ -23,7 +23,6 @@ exports.getEditProduct = (req, res, next) => {
   if (!editMode) {
     return res.redirect("/");
   }
-
   const prodId = req.params.productId;
   Product.findById(prodId, (product) => {
     if (!product) {
@@ -44,7 +43,6 @@ exports.postEditProduct = (req, res, next) => {
   const updatedPrice = req.body.price;
   const updatedImageUrl = req.body.imageUrl;
   const updatedDesc = req.body.description;
-
   const updatedProduct = new Product(
     prodId,
     updatedTitle,
@@ -52,14 +50,7 @@ exports.postEditProduct = (req, res, next) => {
     updatedDesc,
     updatedPrice
   );
-
   updatedProduct.save();
-  res.redirect("/admin/products");
-};
-
-exports.postDeleteProduct = (req, res, next) => {
-  const prodId = req.body.productId;
-  Product.deleteById(prodId);
   res.redirect("/admin/products");
 };
 
@@ -71,4 +62,10 @@ exports.getProducts = (req, res, next) => {
       path: "/admin/products",
     });
   });
+};
+
+exports.postDeleteProduct = (req, res, next) => {
+  const prodId = req.body.productId;
+  Product.deleteById(prodId);
+  res.redirect("/admin/products");
 };
