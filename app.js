@@ -58,17 +58,21 @@ sequelize
   .sync()
   // .sync({ force: true })
   .then((result) => {
-    User.findByPk(1)
-      .then((user) => {
-        if (!user) {
-          return User.create({ name: "Max", email: "test@test.com" });
-        }
-        return user;
-      })
-      .then((user) => {
-        console.log(user);
-        app.listen(3000);
-      });
+    return User.findByPk(1);
+  })
+  .then((user) => {
+    if (!user) {
+      return User.create({ name: "Max", email: "test@test.com" });
+    }
+    return user;
+  })
+  .then((user) => {
+    console.log(user);
+    return user.createCart();
+  })
+  .then((cart) => {
+    console.log(cart);
+    app.listen(3000);
   })
   .catch((err) => {
     console.log(err);
