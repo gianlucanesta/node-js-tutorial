@@ -9,6 +9,7 @@ const sequelize = require("./util/database");
 
 const Product = require("./models/product");
 const User = require("./models/user");
+const Cart = require("./models/cart");
 
 const app = express();
 
@@ -38,10 +39,24 @@ app.use(errorController.get404);
 // Associating a product to a user
 Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 
+// Associating a user to a cart
 User.hasMany(Product);
+
+// Associating a user to a cart
+User.hasOne(Cart);
+
+// Associating a cart to a user
+Cart.belongsTo(User);
+
+// Associating a cart to a product
+Cart.belongsToMany(Product, { through: "cartItems" });
+
+// Associating a product to a cart
+Product.belongsToMany(Cart, { through: "cartItems" });
 
 sequelize
   .sync()
+  // .sync({ force: true })
   .then((result) => {
     User.findByPk(1)
       .then((user) => {
