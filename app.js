@@ -38,6 +38,8 @@ app.use(errorController.get404);
 // Associating a product to a user
 Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 
+User.hasMany(Product);
+
 sequelize
   .sync()
   .then((result) => {
