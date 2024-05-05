@@ -60,6 +60,9 @@ Product.belongsToMany(Cart, { through: CartItem });
 // Associating an order to a user
 Order.belongsTo(User);
 
+// Associating a user to an order
+User.hasMany(Order);
+
 // Associating an order to a product
 Order.belongsToMany(Product, { through: OrderItem });
 
