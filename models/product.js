@@ -1,5 +1,15 @@
-const Sequelize = require("sequelize");
-const sequelize = require("../util/database");
+const mongoConnect = require("../util/database");
+
+class Product {
+  constructor(title, imageUrl, description, price) {
+    this.title = title;
+    this.imageUrl = imageUrl;
+    this.description = description;
+    this.price = price;
+  }
+
+  save() {}
+}
 
 const Product = sequelize.define("product", {
   id: {
