@@ -16,15 +16,6 @@ exports.getProducts = (req, res, next) => {
 
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
-  Product.findById(prodId)
-    .then((product) => {
-      res.render("shop/product-detail", {
-        product: product,
-        pageTitle: product.title,
-        path: "/products",
-      });
-    })
-    .catch((err) => console.log(err));
   // Product.findAll({ where: { id: prodId } })
   //   .then(products => {
   //     res.render('shop/product-detail', {
@@ -34,6 +25,15 @@ exports.getProduct = (req, res, next) => {
   //     });
   //   })
   //   .catch(err => console.log(err));
+  Product.findById(prodId)
+    .then((product) => {
+      res.render("shop/product-detail", {
+        product: product,
+        pageTitle: product.title,
+        path: "/products",
+      });
+    })
+    .catch((err) => console.log(err));
 };
 
 exports.getIndex = (req, res, next) => {
@@ -75,14 +75,6 @@ exports.postCart = (req, res, next) => {
     });
 };
 
-exports.postCartDelete = (req, res, next) => {
-  const prodId = req.body.productId;
-  Product.findById(prodId, (product) => {
-    Cart.deleteProduct(prodId, product.price);
-    res.redirect("/cart");
-  });
-};
-
 exports.postCartDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
   req.user
@@ -105,7 +97,7 @@ exports.postOrder = (req, res, next) => {
 
 exports.getOrders = (req, res, next) => {
   req.user
-    .getOrders({ include: ["products"] })
+    .getOrders()
     .then((orders) => {
       res.render("shop/orders", {
         path: "/orders",
@@ -114,11 +106,4 @@ exports.getOrders = (req, res, next) => {
       });
     })
     .catch((err) => console.log(err));
-};
-
-exports.getCheckout = (req, res, next) => {
-  res.render("shop/checkout", {
-    path: "/checkout",
-    pageTitle: "Checkout",
-  });
 };

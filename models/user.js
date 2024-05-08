@@ -4,22 +4,16 @@ const getDb = require("../util/database").getDb;
 const ObjectId = mongodb.ObjectId;
 
 class User {
-  constructor(name, email, cart, id) {
-    this.name = name;
+  constructor(username, email, cart, id) {
+    this.name = username;
     this.email = email;
-    this.cart = cart;
+    this.cart = cart; // {items: []}
     this._id = id;
   }
 
   save() {
     const db = getDb();
-    return db
-      .collection("users")
-      .insertOne(this)
-      .then((result) => {
-        console.log(result);
-      })
-      .catch((err) => console.log(err));
+    return db.collection("users").insertOne(this);
   }
 
   addToCart(product) {
@@ -47,11 +41,7 @@ class User {
       .updateOne(
         { _id: new ObjectId(this._id) },
         { $set: { cart: updatedCart } }
-      )
-      .then((result) => {
-        console.log("Added to cart");
-      })
-      .catch((err) => console.log(err));
+      );
   }
 
   getCart() {
@@ -99,7 +89,7 @@ class User {
             name: this.name,
           },
         };
-        return db.collection("orders").insertOne(this.cart);
+        return db.collection("orders").insertOne(order);
       })
       .then((result) => {
         this.cart = { items: [] };
@@ -129,7 +119,9 @@ class User {
         console.log(user);
         return user;
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+      });
   }
 }
 
