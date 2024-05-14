@@ -1,4 +1,6 @@
 <%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href="/css/product.css">
+
     </head>
 
     <body>
@@ -6,7 +8,7 @@
         <main class="centered">
             <h1><%= product.title %></h1>
             <hr>
-            <div>
+            <div class="detail-product-image">
               <img src="<%= product.imageUrl %>" alt="<%= product.title %>">
             </div>
             <h2>$<%= product.price %></h2>
