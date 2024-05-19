@@ -41,12 +41,8 @@ app.use(
 );
 
 app.use((req, res, next) => {
-  User.findById("6643cb823e3f150a87cb2bd8")
-    .then((user) => {
-      req.user = user;
-      next();
-    })
-    .catch((err) => console.log(err));
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  next();
 });
 
 app.use("/admin", adminRoutes);
