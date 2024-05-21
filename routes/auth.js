@@ -14,7 +14,10 @@ router.post("/login", authController.postLogin);
 
 router.post(
   "/signup",
-  [check("email").isEmail(), check("password").isLength({ min: 5 })],
+  [
+    check("email").isEmail().withMessage("Please enter a valid email."),
+    check("password").isLength({ min: 5 }),
+  ],
   authController.postSignup
 );
 
