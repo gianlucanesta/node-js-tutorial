@@ -1,7 +1,7 @@
 const User = require("../models/user");
 const express = require("express");
 
-const { check } = require("express-validator");
+const { check, body } = require("express-validator");
 
 const authController = require("../controllers/auth");
 
@@ -23,12 +23,24 @@ router.post(
         const userDoc = await User.findOne({ email: value });
         if (userDoc) {
           return Promise.reject(
-            "L'indirizzo email esiste già, scegliene un altro."
+            "The email address already exists, choose another one."
           );
         }
         return true;
       }),
-    check("password").isLength({ min: 5 }),
+    check("password")
+      .isLength({ min: 5 })
+      .withMessage("Password must be at least 5 characters long.")
+      .matches(/^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]+$/)
+      .withMessage("Password must be alphanumeric."),
+    body("confirmPassword")
+      .trim()
+      .custom((value, { req }) => {
+        if (value !== req.body.password) {
+          throw new Error("Passwords have to match!");
+        }
+        return true;
+      }),
   ],
   authController.postSignup
 );
