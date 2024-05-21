@@ -11,7 +11,18 @@ router.get("/login", authController.getLogin);
 
 router.get("/signup", authController.getSignup);
 
-router.post("/login", authController.postLogin);
+router.post(
+  "/login",
+  [
+    check("email").isEmail().withMessage("Please enter a valid email."),
+    check("password")
+      .isLength({ min: 5 })
+      .withMessage("Password must be at least 5 characters long.")
+      .matches(/^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]+$/)
+      .withMessage("Password must be alphanumeric."),
+  ],
+  authController.postLogin
+);
 
 router.post(
   "/signup",
