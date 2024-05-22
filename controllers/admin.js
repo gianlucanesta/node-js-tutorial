@@ -20,7 +20,6 @@ exports.postAddProduct = (req, res, next) => {
   const { title, imageUrl, price, description } = req.body;
 
   const errors = validationResult(req);
-  console.log("Add Product Validation Errors:", errors.array());
   if (!errors.isEmpty()) {
     return res.status(422).render("admin/edit-product", {
       pageTitle: "Add Product",
@@ -78,7 +77,6 @@ exports.postEditProduct = (req, res, next) => {
   const { productId, title, imageUrl, description, price } = req.body;
 
   const errors = validationResult(req);
-  console.log("Edit Product Validation Errors:", errors.array());
   if (!errors.isEmpty()) {
     return res.status(422).render("admin/edit-product", {
       pageTitle: "Edit Product",
