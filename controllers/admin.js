@@ -17,7 +17,11 @@ exports.getAddProduct = (req, res, next) => {
 };
 
 exports.postAddProduct = (req, res, next) => {
-  const { title, image, price, description } = req.body;
+  const title = req.body.title;
+  const image = req.file;
+  const price = req.body.price;
+  const description = req.body.description;
+  console.log(image);
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -33,10 +37,10 @@ exports.postAddProduct = (req, res, next) => {
   }
 
   const product = new Product({
-    title,
-    price,
-    description,
-    image,
+    title: title,
+    price: price,
+    description: description,
+    image: image,
     userId: req.user,
   });
 

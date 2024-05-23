@@ -7,6 +7,7 @@ const session = require("express-session");
 const mongoDbStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const flash = require("connect-flash");
+const multer = require("multer");
 
 const errorController = require("./controllers/error");
 
@@ -32,6 +33,7 @@ const authRoutes = require("./routes/auth");
 const shopRoutes = require("./routes/shop");
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(multer({ dest: path.join(__dirname, "images") }).single("image"));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use(
