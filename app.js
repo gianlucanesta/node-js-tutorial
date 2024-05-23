@@ -1,5 +1,5 @@
+require("dotenv").config();
 const path = require("path");
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
@@ -10,20 +10,43 @@ const flash = require("connect-flash");
 const multer = require("multer");
 
 const errorController = require("./controllers/error");
-
 const User = require("./models/user");
-
-const MONGODB_URI =
-  "mongodb+srv://gianlucanesta:JqhYo1lxsh4JlbZI@cluster0.h68rwui.mongodb.net/shop";
 
 const app = express();
 
 const store = new mongoDbStore({
-  uri: MONGODB_URI,
+  uri: process.env.MONGODB_URI,
   collection: "sessions",
 });
 
-const csrfProtection = csrf();
+const csrfProtection = csrf({
+  // cookie: false,
+});
+
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, "images"));
+  },
+  filename: (req, file, cb) => {
+    cb(
+      null,
+      new Date().toISOString().replace(/:/g, "-") + "-" + file.originalname
+      // file.originalname
+    );
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
 
 app.set("view engine", "ejs");
 app.set("views", "views");
@@ -33,7 +56,6 @@ const authRoutes = require("./routes/auth");
 const shopRoutes = require("./routes/shop");
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(multer({ dest: path.join(__dirname, "images") }).single("image"));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use(
@@ -46,7 +68,19 @@ app.use(
 );
 
 app.use(csrfProtection);
+
 app.use(flash());
+app.use(
+  multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
+);
+
+app.use((req, res, next) => {
+  console.log("Session:", req.session);
+  console.log("Body:", req.body);
+  console.log("File:", req.file);
+  console.log("Request:", req.method, req.url, req.body);
+  next();
+});
 
 app.use((req, res, next) => {
   if (!req.session.user) {
@@ -61,7 +95,7 @@ app.use((req, res, next) => {
       next();
     })
     .catch((err) => {
-      throw new Error(err);
+      next(new Error(err));
     });
 });
 
@@ -78,16 +112,21 @@ app.use(shopRoutes);
 app.use(errorController.get404);
 
 app.use((error, req, res, next) => {
+  console.error("Errore:", error);
   res.status(500).render("500", {
     pageTitle: "Error",
     path: "/500",
-    isAuthenticated: req.session.isLoggedIn,
+    isAuthenticated: req.session ? req.session.isLoggedIn : false,
+    csrfToken: req.csrfToken(),
   });
 });
 
 mongoose
-  .connect(MONGODB_URI)
+  .connect(process.env.MONGODB_URI)
   .then(() => {
+    console.log("Connection successful");
     app.listen(3000);
   })
-  .catch((err) => console.log(err));
+  .catch((err) => {
+    console.error("Connection error", err);
+  });
