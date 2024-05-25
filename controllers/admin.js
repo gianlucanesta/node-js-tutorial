@@ -180,7 +180,9 @@ exports.postDeleteProduct = (req, res, next) => {
       if (!product) {
         return next(new Error("Product not found."));
       }
-      deleteFile(product.imageUrl);
+      console.log("Percorso del file immagine:", product.imageUrl);
+      const imagePath = path.join(__dirname, "..", product.imageUrl);
+      deleteFile(imagePath);
       return Product.deleteOne({ _id: prodId, userId: req.user._id });
     })
 
