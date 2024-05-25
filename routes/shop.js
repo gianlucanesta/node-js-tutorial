@@ -32,8 +32,10 @@ router.post("/cart", isAuth, shopController.postCart);
 // shop/orders => GET
 router.get("/orders", isAuth, shopController.getOrders);
 
-// router.get("/checkout", shopController.getCheckout);
+// shop/checkout => GET
+router.get("/checkout", isAuth, shopController.getCheckout);
 
+// shop/invoice => GET
 router.get("/orders/:orderId", isAuth, shopController.getInvoice);
 
 module.exports = router;

@@ -1,0 +1,29 @@
+<%- include('../includes/head.ejs') %>
+</head>
+
+<body>
+    <%- include('../includes/navigation.ejs') %>
+    <link rel="stylesheet" href="/css/cart.css">
+
+    <main>
+      <ul class="cart__item-list">
+          <% products.forEach(p => { %>
+              <li class="cart__item">
+                  <% if (p.productId) { %>
+                      <h1><%= p.productId.title %></h1>
+                      <h2>Quantity: <%= p.quantity %></h2>
+                   
+                  <% } else { %>
+                      <h1>Title Not Available</h1>
+                      <h2>Quantity: <%= p.quantity %></h2>
+
+                  <% } %>
+              </li>
+          <% }) %>
+      </ul>
+
+      <div>
+        <h2 class="centered">Total: $<%= totalSum %></h2>
+      </div>
+    </main>
+    <%- include('../includes/end.ejs') %>
