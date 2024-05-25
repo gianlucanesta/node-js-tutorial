@@ -1,4 +1,5 @@
 require("dotenv").config();
+const fs = require("fs");
 const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -19,20 +20,23 @@ const store = new mongoDbStore({
   collection: "sessions",
 });
 
-const csrfProtection = csrf({
-  // cookie: false,
-});
+const csrfProtection = csrf();
+
+const imageUploadDir = path.join(__dirname, "images");
+
+// Verifica se la cartella esiste, altrimenti creala
+if (!fs.existsSync(imageUploadDir)) {
+  fs.mkdirSync(imageUploadDir, { recursive: true });
+}
 
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "images"));
+    cb(null, imageUploadDir);
   },
   filename: (req, file, cb) => {
-    cb(
-      null,
-      new Date().toISOString().replace(/:/g, "-") + "-" + file.originalname
-      // file.originalname
-    );
+    const sanitizedFilename =
+      new Date().toISOString().replace(/:/g, "-") + "-" + file.originalname;
+    cb(null, sanitizedFilename);
   },
 });
 
@@ -56,7 +60,11 @@ const authRoutes = require("./routes/auth");
 const shopRoutes = require("./routes/shop");
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(
+  multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
+);
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/images", express.static(imageUploadDir));
 
 app.use(
   session({
@@ -70,15 +78,18 @@ app.use(
 app.use(csrfProtection);
 
 app.use(flash());
-app.use(
-  multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
-);
 
 app.use((req, res, next) => {
   console.log("Session:", req.session);
   console.log("Body:", req.body);
   console.log("File:", req.file);
   console.log("Request:", req.method, req.url, req.body);
+  next();
+});
+
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
   next();
 });
 
@@ -99,12 +110,6 @@ app.use((req, res, next) => {
     });
 });
 
-app.use((req, res, next) => {
-  res.locals.isAuthenticated = req.session.isLoggedIn;
-  res.locals.csrfToken = req.csrfToken();
-  next();
-});
-
 app.use("/admin", adminRoutes);
 app.use(authRoutes);
 app.use(shopRoutes);
@@ -117,7 +122,6 @@ app.use((error, req, res, next) => {
     pageTitle: "Error",
     path: "/500",
     isAuthenticated: req.session ? req.session.isLoggedIn : false,
-    csrfToken: req.csrfToken(),
   });
 });
 

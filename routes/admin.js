@@ -42,7 +42,6 @@ router.post(
       .isString()
       .isLength({ min: 3 })
       .withMessage("Title must be at least 3 characters long."),
-    body("imageUrl").isURL().withMessage("Please enter a valid URL."),
     body("price").isFloat().withMessage("Please enter a valid price."),
     body("description")
       .isString()
