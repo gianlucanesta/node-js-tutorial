@@ -11,15 +11,21 @@
                     <li class="cart__item">
                         <% if (p.productId) { %>
                             <h1><%= p.productId.title %></h1>
+                            <h2>Quantity: <%= p.quantity %></h2>
+                            <form action="/cart-delete-item" method="POST">
+                                <input type="hidden" value="<%= p.productId._id %>" name="productId">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                                <button class="btn danger" type="submit">Delete</button>
+                            </form>
                         <% } else { %>
                             <h1>Title Not Available</h1>
+                            <h2>Quantity: <%= p.quantity %></h2>
+                            <form action="/cart-delete-item" method="POST">
+                                <input type="hidden" value="" name="productId">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                                <button class="btn danger" type="submit">Delete</button>
+                            </form>
                         <% } %>
-                        <h2>Quantity: <%= p.quantity %></h2>
-                        <form action="/cart-delete-item" method="POST">
-                            <input type="hidden" value="<%= p.productId._id %>" name="productId">
-                            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-                            <button class="btn danger" type="submit">Delete</button>
-                        </form>
                     </li>
                 <% }) %>
             </ul>

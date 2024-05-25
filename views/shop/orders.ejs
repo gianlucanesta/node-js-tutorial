@@ -19,11 +19,12 @@
                                 total += p.product.price * p.quantity; // Calculate total
                             %>
                                 <li class="orders__products-item">
-                                    <%= p.product.title %> - $<%= p.product.price.toFixed(2) %> (<%= p.quantity %>)
+                                    <%= p.product.title %> - $<%= p.product.price.toFixed(2) %> (<%= p.quantity %>) - <a href="/products/<%= p.product._id %>">View</a> 
                                 </li>
                             <% }); %>
                         </ul>
-                        <h2>Total: $<%= total.toFixed(2) %></h2> <!-- Display total -->
+                        <h2>Total: $<%= total.toFixed(2) %></h2> 
+                        <a href="/orders/<%= order._id %>">Download Invoice</a>
                     </li>
                 <% }); %>
             </ul>
