@@ -35,6 +35,12 @@ router.get("/orders", isAuth, shopController.getOrders);
 // shop/checkout => GET
 router.get("/checkout", isAuth, shopController.getCheckout);
 
+// shop/checkout/success => GET
+router.get("/checkout/success", isAuth, shopController.getCheckoutSuccess);
+
+// shop/checkout/cancel => GET
+router.get("/checkout/cancel", isAuth, shopController.getCheckout);
+
 // shop/invoice => GET
 router.get("/orders/:orderId", isAuth, shopController.getInvoice);
 
