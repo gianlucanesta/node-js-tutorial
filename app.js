@@ -1,6 +1,10 @@
+require("dotenv").config();
+
 const express = require("express");
 
 const bodyParser = require("body-parser");
+
+const mongoose = require("mongoose");
 
 const feedRoutes = require("./routes/feed");
 
@@ -22,4 +26,12 @@ app.use("/feed", feedRoutes);
 
 const port = 8080;
 
-app.listen(port);
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log("Connection successful");
+    app.listen(port);
+  })
+  .catch((err) => {
+    console.error("Connection error", err);
+  });
