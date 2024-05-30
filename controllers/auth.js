@@ -10,9 +10,8 @@ exports.signup = (req, res, next) => {
     const error = new Error("Validation failed, entered data is incorrect.");
     error.statusCode = 422;
     error.data = errors.array();
-    return next(error); // Usare return per assicurarsi che il codice successivo non venga eseguito
+    return next(error);
   }
-
   const email = req.body.email;
   const name = req.body.name;
   const password = req.body.password;
