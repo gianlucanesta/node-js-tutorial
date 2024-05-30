@@ -4,27 +4,27 @@ const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 
 exports.signup = async (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    const error = new Error("Validation failed, entered data is incorrect.");
+    error.statusCode = 422;
+    error.data = errors.array();
+    throw error;
+  }
+
+  const email = req.body.email;
+  const name = req.body.name;
+  const password = req.body.password;
+
+  const userDoc = await User.findOne({ email: email });
+  if (userDoc) {
+    const error = new Error("E-Mail address already exists!");
+    error.statusCode = 422;
+    throw error;
+  }
+
   try {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      const error = new Error("Validation failed, entered data is incorrect.");
-      error.statusCode = 422;
-      error.data = errors.array();
-      throw error;
-    }
-
-    const email = req.body.email;
-    const name = req.body.name;
-    const password = req.body.password;
-
-    const userDoc = await User.findOne({ email: email });
-    if (userDoc) {
-      const error = new Error("E-Mail address already exists!");
-      error.statusCode = 422;
-      throw error;
-    }
-
     const hashedPw = await bcrypt.hash(password, 12);
 
     const user = new User({
