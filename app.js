@@ -6,11 +6,13 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const multer = require("multer");
-const http = require("http");
-const cors = require("cors");
+// const http = require("http");
+// const cors = require("cors");
 
-const feedRoutes = require("./routes/feed");
-const authRoutes = require("./routes/auth");
+const { graphqlHTTP } = require("express-graphql");
+
+const graphqlSchema = require("./qraphql/schema");
+const graphqlResolver = require("./qraphql/resolvers");
 
 const app = express();
 
@@ -59,8 +61,13 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/feed", feedRoutes);
-app.use("/auth", authRoutes);
+app.use(
+  "/graphql",
+  graphqlHTTP({
+    schema: graphqlSchema,
+    rootValue: graphqlResolver,
+  })
+);
 
 app.use((error, req, res, next) => {
   console.log(error);
@@ -71,18 +78,13 @@ app.use((error, req, res, next) => {
 });
 
 const port = 8080;
-const server = http.createServer(app);
-app.use(cors());
+// app.use(cors());
 
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {
     console.log("Connection successful");
-    server.listen(port);
-    const io = require("./socket").init(server);
-    io.on("connection", (socket) => {
-      console.log("Client connected");
-    });
+    app.listen(port);
   })
   .catch((err) => {
     console.error("Connection error", err);
