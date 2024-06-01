@@ -1,16 +1,13 @@
 require("dotenv").config();
 
 const fs = require("fs");
-
 const path = require("path");
-
 const express = require("express");
-
 const bodyParser = require("body-parser");
-
 const mongoose = require("mongoose");
-
 const multer = require("multer");
+const http = require("http");
+const cors = require("cors");
 
 const feedRoutes = require("./routes/feed");
 const authRoutes = require("./routes/auth");
@@ -47,11 +44,9 @@ const fileFilter = (req, file, cb) => {
 };
 
 app.use(bodyParser.json());
-
 app.use(
   multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
 );
-
 app.use("/images", express.static(imageUploadDir));
 
 app.use((req, res, next) => {
@@ -65,7 +60,6 @@ app.use((req, res, next) => {
 });
 
 app.use("/feed", feedRoutes);
-
 app.use("/auth", authRoutes);
 
 app.use((error, req, res, next) => {
@@ -77,16 +71,15 @@ app.use((error, req, res, next) => {
 });
 
 const port = 8080;
-const http = require("http");
 const server = http.createServer(app);
+app.use(cors());
 
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {
     console.log("Connection successful");
-    app.listen(port);
-    const io = require("socket.io")(server);
-    // require("./socket").init(io);
+    server.listen(port);
+    const io = require("./socket").init(server);
     io.on("connection", (socket) => {
       console.log("Client connected");
     });
