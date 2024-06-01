@@ -16,7 +16,8 @@ exports.getPosts = async (req, res, next) => {
     const posts = await Post.find()
       .skip((currentPage - 1) * perPage)
       .limit(perPage)
-      .populate("creator", "name"); // Aggiunta della popolazione del campo 'creator' con solo il campo 'name'
+      .populate("creator", "name")
+      .sort({ createdAt: -1 });
     res.status(200).json({
       message: "Posts fetched successfully!",
       posts: posts,
