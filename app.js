@@ -6,8 +6,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const multer = require("multer");
-// const http = require("http");
-// const cors = require("cors");
+const http = require("http");
+const cors = require("cors");
 
 const { createHandler } = require("graphql-http/lib/use/express");
 const expressPlayground =
@@ -60,6 +60,9 @@ app.use((req, res, next) => {
     "OPTIONS, GET, POST, PUT, PATCH, DELETE"
   );
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
   next();
 });
 
@@ -91,7 +94,7 @@ app.use((error, req, res, next) => {
 });
 
 const port = 8080;
-// app.use(cors());
+app.use(cors());
 
 mongoose
   .connect(process.env.MONGODB_URI)
