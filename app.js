@@ -16,6 +16,8 @@ const expressPlayground =
 const graphqlSchema = require("./qraphql/schema");
 const graphqlResolver = require("./qraphql/resolvers");
 
+const auth = require("./middleware/auth");
+
 const app = express();
 
 const imageUploadDir = path.join(__dirname, "images");
@@ -65,6 +67,8 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+app.use(auth);
 
 app.use(
   "/graphql",
