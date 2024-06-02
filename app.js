@@ -9,7 +9,9 @@ const multer = require("multer");
 // const http = require("http");
 // const cors = require("cors");
 
-const { graphqlHTTP } = require("express-graphql");
+const { createHandler } = require("graphql-http/lib/use/express");
+const expressPlayground =
+  require("graphql-playground-middleware-express").default;
 
 const graphqlSchema = require("./qraphql/schema");
 const graphqlResolver = require("./qraphql/resolvers");
@@ -63,12 +65,13 @@ app.use((req, res, next) => {
 
 app.use(
   "/graphql",
-  graphqlHTTP({
+  createHandler({
     schema: graphqlSchema,
     rootValue: graphqlResolver,
-    graphiql: true,
+    context: (req) => req.headers,
   })
 );
+app.get("/playground", expressPlayground({ endpoint: "/graphql" }));
 
 app.use((error, req, res, next) => {
   console.log(error);
