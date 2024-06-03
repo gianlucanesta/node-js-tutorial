@@ -70,23 +70,28 @@ app.use((req, res, next) => {
 
 app.use(auth);
 
-app.use(
+app.all(
   "/graphql",
   createHandler({
     schema: graphqlSchema,
     rootValue: graphqlResolver,
-    context: (req) => req.headers,
-    formatError: (error) => {
-      if (!error.originalError) {
-        return error;
-      }
-      const data = error.originalError.data;
-      const message = error.message || "An error occurred";
-      const code = error.originalError.code || 500;
-      return { message: message, status: code, data: data };
+    context: (req, res) => {
+      return {
+        isAuth: req.raw.isAuth,
+        userId: req.raw.userId,
+      };
+    },
+    formatError(err) {
+      if (!err.originalError) return err;
+      const data = err.originalError.data;
+      const message = err.message || "Something went wrong.";
+      const statusCode = err.originalError.statusCode || 500;
+
+      return { message, statusCode, data };
     },
   })
 );
+
 app.get("/playground", expressPlayground({ endpoint: "/graphql" }));
 
 app.use((error, req, res, next) => {

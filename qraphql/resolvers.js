@@ -75,16 +75,17 @@ module.exports = {
       error.code = 401;
       throw error;
     }
+
     const errors = [];
     if (
       validator.isEmpty(postInput.title) ||
-      validator.isLength(postInput.title, { min: 5 })
+      !validator.isLength(postInput.title, { min: 5 })
     ) {
       errors.push({ message: "Title is invalid." });
     }
     if (
       validator.isEmpty(postInput.content) ||
-      validator.isLength(postInput.content, { min: 5 })
+      !validator.isLength(postInput.content, { min: 5 })
     ) {
       errors.push({ message: "Content is invalid." });
     }
@@ -94,24 +95,29 @@ module.exports = {
       error.code = 422;
       throw error;
     }
+
     const user = await User.findById(req.userId);
     if (!user) {
       const error = new Error("Invalid user.");
       error.code = 401;
       throw error;
     }
+
+    console.log("User found:", user);
     const post = new Post({
       title: postInput.title,
       content: postInput.content,
       imageUrl: postInput.imageUrl,
       creator: user,
     });
+
     const createdPost = await post.save();
     user.posts.push(createdPost);
+    await user.save();
+
     return {
       ...createdPost._doc,
-      _id: createdPost.id.toString(),
-      creator: user._id,
+      _id: createdPost._id.toString(),
       createdAt: createdPost.createdAt.toISOString(),
       updatedAt: createdPost.updatedAt.toISOString(),
     };
