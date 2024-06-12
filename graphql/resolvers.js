@@ -107,7 +107,7 @@ module.exports = {
     const post = new Post({
       title: postInput.title,
       content: postInput.content,
-      imageUrl: postInput.imageUrl,
+      imageUrl: postInput.imageUrl.replace(/^.*[\\\/]/, ""),
       creator: user,
     });
 
@@ -151,6 +151,27 @@ module.exports = {
         };
       }),
       totalPosts: totalPosts,
+    };
+  },
+
+  post: async function ({ id }, req) {
+    if (!req.isAuth) {
+      const error = new Error("Not authenticated!");
+      error.code = 401;
+      throw error;
+    }
+    const post = await Post.findById(id).populate("creator");
+    if (!post) {
+      const error = new Error("No post found!");
+      error.code = 404;
+      throw error;
+    }
+    console.log("Post found:", post); // Debug: Verifica il post trovato
+    return {
+      ...post._doc,
+      _id: post.id.toString(),
+      createdAt: post.createdAt.toISOString(),
+      updatedAt: post.updatedAt.toISOString(),
     };
   },
 };
