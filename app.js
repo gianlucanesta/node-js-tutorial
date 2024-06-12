@@ -13,8 +13,8 @@ const { createHandler } = require("graphql-http/lib/use/express");
 const expressPlayground =
   require("graphql-playground-middleware-express").default;
 
-const graphqlSchema = require("./qraphql/schema");
-const graphqlResolver = require("./qraphql/resolvers");
+const graphqlSchema = require("./graphql/schema");
+const graphqlResolver = require("./graphql/resolvers");
 
 const auth = require("./middleware/auth");
 
@@ -70,6 +70,26 @@ app.use((req, res, next) => {
 
 app.use(auth);
 
+app.put("/post-image", auth, (req, res, next) => {
+  if (!req.isAuth) {
+    const error = new Error("Not authenticated!");
+    error.statusCode = 401;
+    throw error;
+  }
+  if (!req.file) {
+    const error = new Error("No file provided!");
+    error.statusCode = 422;
+    throw error;
+  }
+  if (req.body.oldPath) {
+    clearImage(req.body.oldPath);
+  }
+  return res.status(201).json({
+    message: "File stored.",
+    filePath: req.file.path,
+  });
+});
+
 app.all(
   "/graphql",
   createHandler({
@@ -114,3 +134,8 @@ mongoose
   .catch((err) => {
     console.error("Connection error", err);
   });
+
+function clearImage(filePath) {
+  filePath = path.join(__dirname, filePath);
+  fs.unlink(filePath, (err) => console.log(err));
+}
