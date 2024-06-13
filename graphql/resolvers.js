@@ -236,32 +236,6 @@ module.exports = {
     };
   },
 
-  deletePostt: async function ({ id }, req) {
-    if (!req.isAuth) {
-      const error = new Error("Not authenticated!");
-      error.code = 401;
-      throw error;
-    }
-    const post = await Post.findById(id);
-    if (!post) {
-      const error = new Error("No post found!");
-      error.code = 404;
-      throw error;
-    }
-    if (post.creator.toString() !== req.userId.toString()) {
-      const error = new Error("Not authorized!");
-      error.code = 403;
-      throw error;
-    }
-    console.log("Image URL:", post.imageUrl);
-    clearImage(post.imageUrl);
-    await Post.findByIdAndRemove(id);
-    const user = await User.findById(req.userId);
-    user.posts.pull(id);
-    await user.save();
-    return true;
-  },
-
   deletePost: async function ({ id }, req) {
     if (!req.isAuth) {
       const error = new Error("Not authenticated!");
@@ -297,5 +271,45 @@ module.exports = {
       console.error(`Error deleting post with ID ${id}:`, err);
       throw err;
     }
+  },
+
+  user: async function ({ id }, req) {
+    if (!req.isAuth) {
+      const error = new Error("Not authenticated!");
+      error.code = 401;
+      throw error;
+    }
+
+    const user = await User.findById(req.userId);
+    if (!user) {
+      const error = new Error("No user found!");
+      error.code = 404;
+      throw error;
+    }
+
+    return {
+      ...user._doc,
+      _id: user.id.toString(),
+    };
+  },
+
+  updateStatus: async function ({ status }, req) {
+    if (!req.isAuth) {
+      const error = new Error("Not authenticated!");
+      error.code = 401;
+      throw error;
+    }
+    const user = await User.findById(req.userId);
+    if (!user) {
+      const error = new Error("No user found!");
+      error.code = 404;
+      throw error;
+    }
+    user.status = status;
+    await user.save();
+    return {
+      ...user._doc,
+      _id: user.id.toString(),
+    };
   },
 };
