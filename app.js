@@ -18,6 +18,8 @@ const graphqlResolver = require("./graphql/resolvers");
 
 const auth = require("./middleware/auth");
 
+const { clearImage } = require("./util/file");
+
 const app = express();
 
 const imageUploadDir = path.join(__dirname, "images");
@@ -84,9 +86,11 @@ app.put("/post-image", auth, (req, res, next) => {
   if (req.body.oldPath) {
     clearImage(req.body.oldPath);
   }
+  const filePath = req.file.filename;
+  // const filePath = req.file.path.replace("\\", "/");
   return res.status(201).json({
     message: "File stored.",
-    filePath: req.file.path,
+    filePath: filePath,
   });
 });
 
@@ -135,7 +139,7 @@ mongoose
     console.error("Connection error", err);
   });
 
-function clearImage(filePath) {
-  filePath = path.join(__dirname, filePath);
-  fs.unlink(filePath, (err) => console.log(err));
-}
+// function clearImage(filePath) {
+//   filePath = path.join(__dirname, filePath);
+//   fs.unlink(filePath, (err) => console.log(err));
+// }

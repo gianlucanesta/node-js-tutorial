@@ -8,6 +8,8 @@ const validator = require("validator");
 
 const jwt = require("jsonwebtoken");
 
+const { clearImage } = require("../util/file");
+
 module.exports = {
   createUser: async function ({ userInput }, req) {
     const errors = [];
@@ -232,5 +234,68 @@ module.exports = {
       createdAt: updatedPost.createdAt.toISOString(),
       updatedAt: updatedPost.updatedAt.toISOString(),
     };
+  },
+
+  deletePostt: async function ({ id }, req) {
+    if (!req.isAuth) {
+      const error = new Error("Not authenticated!");
+      error.code = 401;
+      throw error;
+    }
+    const post = await Post.findById(id);
+    if (!post) {
+      const error = new Error("No post found!");
+      error.code = 404;
+      throw error;
+    }
+    if (post.creator.toString() !== req.userId.toString()) {
+      const error = new Error("Not authorized!");
+      error.code = 403;
+      throw error;
+    }
+    console.log("Image URL:", post.imageUrl);
+    clearImage(post.imageUrl);
+    await Post.findByIdAndRemove(id);
+    const user = await User.findById(req.userId);
+    user.posts.pull(id);
+    await user.save();
+    return true;
+  },
+
+  deletePost: async function ({ id }, req) {
+    if (!req.isAuth) {
+      const error = new Error("Not authenticated!");
+      error.code = 401;
+      throw error;
+    }
+
+    try {
+      const post = await Post.findById(id);
+
+      if (!post) {
+        const error = new Error("Post not found!");
+        error.code = 404;
+        throw error;
+      }
+
+      if (post.creator.toString() !== req.userId.toString()) {
+        const error = new Error("Not authorized to delete this post!");
+        error.code = 403;
+        throw error;
+      }
+
+      clearImage(post.imageUrl);
+
+      await Post.findOneAndDelete({ _id: id });
+
+      const user = await User.findById(req.userId);
+      user.posts.pull(id);
+      await user.save();
+
+      return true;
+    } catch (err) {
+      console.error(`Error deleting post with ID ${id}:`, err);
+      throw err;
+    }
   },
 };
