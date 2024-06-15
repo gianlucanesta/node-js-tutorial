@@ -13,9 +13,18 @@ const helmet = require("helmet");
 const compression = require("compression");
 const morgan = require("morgan");
 const https = require("https");
+const cors = require("cors");
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
+
+const corsConfig = {
+  origin: "*",
+  credentials: true,
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+};
+
+app.use(cors(corsConfig));
 
 const app = express();
 
@@ -72,7 +81,7 @@ app.use(helmet());
 
 app.use(compression());
 
-app.use(morgan("combined", { stream: accessLogStream }));
+// app.use(morgan("combined", { stream: accessLogStream }));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
@@ -97,13 +106,13 @@ const certificate = fs.readFileSync("server.cert");
 
 app.use(flash());
 
-// app.use((req, res, next) => {
-//   console.log("Session:", req.session);
-//   console.log("Body:", req.body);
-//   console.log("File:", req.file);
-//   console.log("Request:", req.method, req.url, req.body);
-//   next();
-// });
+app.use((req, res, next) => {
+  console.log("Session:", req.session);
+  console.log("Body:", req.body);
+  console.log("File:", req.file);
+  console.log("Request:", req.method, req.url, req.body);
+  next();
+});
 
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isLoggedIn;
@@ -149,10 +158,10 @@ mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {
     console.log("Connection successful");
-    https
-      .createServer({ key: privateKey, cert: certificate }, app)
-      .listen(PORT);
-    // app.listen(PORT);
+    // https
+    //   .createServer({ key: privateKey, cert: certificate }, app)
+    //   .listen(PORT);
+    app.listen(PORT);
   })
   .catch((err) => {
     console.error("Connection error", err);

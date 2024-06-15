@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start-dev": "nodemon app.js",
-    "start-server": "node app.js"
+    "start": "node app.js"
   },
   "author": "Gianluca Nesta",
   "license": "ISC",
@@ -20,6 +20,7 @@
     "compression": "^1.7.4",
     "connect-flash": "^0.1.1",
     "connect-mongodb-session": "^5.0.0",
+    "cors": "^2.8.5",
     "csurf": "^1.11.0",
     "dotenv": "^16.4.5",
     "ejs": "^2.6.1",

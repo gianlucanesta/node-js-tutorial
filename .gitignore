@@ -1,4 +1,4 @@
 node_modules
 .env
-nodemon.json
 .vercel
+vercel.json
