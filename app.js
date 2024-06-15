@@ -1,4 +1,4 @@
-require("dotenv").config();
+// require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
 const express = require("express");
@@ -125,11 +125,13 @@ app.use((error, req, res, next) => {
   });
 });
 
+PORT = process.env.PORT || 3000;
+
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {
     console.log("Connection successful");
-    app.listen(3000);
+    app.listen(PORT);
   })
   .catch((err) => {
     console.error("Connection error", err);
