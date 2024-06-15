@@ -1,4 +1,4 @@
-// require("dotenv").config();
+require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
 const express = require("express");
@@ -149,10 +149,10 @@ mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {
     console.log("Connection successful");
-    // https
-    //   .createServer({ key: privateKey, cert: certificate }, app)
-    //   .listen(PORT);
-    app.listen(PORT);
+    https
+      .createServer({ key: privateKey, cert: certificate }, app)
+      .listen(PORT);
+    // app.listen(PORT);
   })
   .catch((err) => {
     console.error("Connection error", err);
