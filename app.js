@@ -9,6 +9,7 @@ const mongoDbStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const flash = require("connect-flash");
 const multer = require("multer");
+const helmet = require("helmet");
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
@@ -59,6 +60,8 @@ const adminRoutes = require("./routes/admin");
 const authRoutes = require("./routes/auth");
 const shopRoutes = require("./routes/shop");
 
+app.use(helmet());
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
   multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
@@ -79,13 +82,13 @@ app.use(csrfProtection);
 
 app.use(flash());
 
-app.use((req, res, next) => {
-  console.log("Session:", req.session);
-  console.log("Body:", req.body);
-  console.log("File:", req.file);
-  console.log("Request:", req.method, req.url, req.body);
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log("Session:", req.session);
+//   console.log("Body:", req.body);
+//   console.log("File:", req.file);
+//   console.log("Request:", req.method, req.url, req.body);
+//   next();
+// });
 
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isLoggedIn;
