@@ -2,11 +2,11 @@
   "name": "nodejs-complete-guide",
   "version": "1.0.0",
   "description": "Complete Node.js Guide",
-  "main": "/api/app.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start-dev": "nodemon api/app.js",
-    "start": "node api/app.js"
+    "start-dev": "nodemon app.js",
+    "start": "node app.js"
   },
   "author": "Gianluca Nesta",
   "license": "ISC",
