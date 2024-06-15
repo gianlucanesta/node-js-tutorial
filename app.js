@@ -10,6 +10,7 @@ const csrf = require("csurf");
 const flash = require("connect-flash");
 const multer = require("multer");
 const helmet = require("helmet");
+const compression = require("compression");
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
@@ -61,6 +62,8 @@ const authRoutes = require("./routes/auth");
 const shopRoutes = require("./routes/shop");
 
 app.use(helmet());
+
+app.use(compression());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
