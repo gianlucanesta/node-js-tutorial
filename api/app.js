@@ -18,16 +18,13 @@ const cors = require("cors");
 const errorController = require("./controllers/error");
 const User = require("./models/user");
 
+const app = express(); // Inizializza l'applicazione express qui
+
 const corsConfig = {
   origin: "*",
   credentials: true,
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
 };
-
-app.options("", cors(corsConfig));
-app.use(cors(corsConfig));
-
-const app = express();
 
 const store = new mongoDbStore({
   uri: process.env.MONGODB_URI,
@@ -137,6 +134,8 @@ app.use((req, res, next) => {
       next(new Error(err));
     });
 });
+
+app.use(cors(corsConfig)); // Configura CORS qui dopo aver definito `app`
 
 app.use("/admin", adminRoutes);
 app.use(authRoutes);
