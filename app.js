@@ -24,6 +24,7 @@ const corsConfig = {
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
 };
 
+app.options("", cors(corsConfig));
 app.use(cors(corsConfig));
 
 const app = express();
