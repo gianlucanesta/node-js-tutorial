@@ -66,11 +66,14 @@ describe("Auth controller - LOGIN", function () {
           },
         };
 
-        AuthController.getStatus(req, res, () => {}).then(() => {
+        AuthController.getUserStatus(req, res, () => {}).then(() => {
           const expect = getExpect();
           expect(res.statusCode).to.be.equal(200);
           expect(res.userStatus).to.be.equal("I am new!");
-          done();
+          User.deleteMany({});
+          mongoose.connection.close().then(() => {
+            done();
+          });
         });
       })
       .catch((err) => {
