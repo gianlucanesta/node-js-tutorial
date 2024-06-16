@@ -1,7 +1,11 @@
+require("dotenv").config();
+
 async function getExpect() {
   const expect = await import("chai").then((mod) => mod.expect);
   return expect;
 }
+
+const mongoose = require("mongoose");
 
 const sinon = require("sinon");
 
@@ -31,5 +35,18 @@ describe("Auth controller - LOGIN", function () {
     });
 
     User.findOne.restore();
+  });
+
+  it("should send a response with a valid user status for an existing user", async function (done) {
+    mongoose.connect(process.env.MONGODB_URI_TEST).then((result) => {
+      const user = new User({
+        email: "a@a.com",
+        password: "1234",
+        name: "name",
+        posts: [],
+      }).catch((err) => {
+        console.log(err);
+      });
+    });
   });
 });
