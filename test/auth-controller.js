@@ -14,9 +14,21 @@ describe("Auth controller - LOGIN", function () {
     sinon.stub(User, "findOne");
     User.findOne.throws();
 
-    const expect = await getExpect();
+    const req = {
+      body: {
+        email: "a@a.com",
+        password: "1234",
+      },
+    };
 
-    expect(AuthController.login);
+    AuthController.login(req, {}, () => {}).then((result) => {
+      // console.log("result:", result);
+      const expect = getExpect();
+
+      expect(result).to.be.an("error");
+      expect(result).to.have.property("statusCode", 500);
+      // done()
+    });
 
     User.findOne.restore();
   });
