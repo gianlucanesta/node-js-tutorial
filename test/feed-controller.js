@@ -59,7 +59,6 @@ describe("Feed controller", function () {
 
     const expect = await getExpect();
     expect(updatedUser).to.not.be.null;
-    ù;
     expect(updatedUser).to.have.property("posts");
     expect(updatedUser.posts).to.have.length(1);
   });
