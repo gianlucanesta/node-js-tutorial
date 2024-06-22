@@ -6,4 +6,3 @@ const data = encoder.encode(text);
 Deno.writeFile("test.txt", data).then(() =>
   console.log("Successfully wrote to file")
 );
-//deno run --allow-write=test.txt app.ts
